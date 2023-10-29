@@ -7,7 +7,11 @@ import random
 bg = turtle.Screen()
 bg.bgcolor("Black")
 bg.title("Space Destroyer")
+bg.bgpic("Spacebg.gif")
 
+#register the shapes
+turtle.register_shape("destroyer.gif")
+turtle.register_shape("Player.gif")
 #Draw Border
 border_pen = turtle.Turtle()
 border_pen.speed(0)
@@ -21,10 +25,22 @@ for side in range(4):
     border_pen.lt(90)
 border_pen.hideturtle()
 
+#Set the score to 0
+score = 0
+#draw the score
+score_pen = turtle.Turtle()
+score_pen.speed(0)
+score_pen.color("white")
+score_pen.penup()
+score_pen.setposition(-280, 270)
+scorestring = "Score: %s" %score
+score_pen.write(scorestring, False, align="left", font= ("Arial", 14, "normal"))
+score_pen.hideturtle()
+
 #Create the player
 player = turtle.Turtle()
 player.color("blue")
-player.shape("triangle")
+player.shape("Player.gif")
 player.penup()
 player.speed(0)
 player.setposition(0, -250)
@@ -35,7 +51,7 @@ playerspeed = 15
 #create enemy
 enemy = turtle.Turtle()
 enemy.color("Red")
-enemy.shape("circle")
+enemy.shape("destroyer.gif")
 enemy.penup()
 enemy.speed(0)
 enemy.setposition(-200, 250)
@@ -48,7 +64,7 @@ for i in range(number_of_enemies):
     enemies.append(turtle.Turtle())
 for enemy in enemies:
     enemy.color("Red")
-    enemy.shape("circle")
+    enemy.shape("destroyer.gif")
     enemy.penup()
     enemy.speed(0)
     x = random.randint(-200, 200)
@@ -115,16 +131,19 @@ while True:
         enemy.setx(x)
 #move the enemy back and down
         if enemy.xcor() > 280:
-            y = enemy.ycor()
-            y -= 40
+            #moves all the enemies down
+            for e in enemies:
+               y = e.ycor()
+               y -= 40
+               e.sety(y)
             enemyspeed *= -1
-            enemy.sety(y)
     
         if enemy.xcor() < -280:
-            y = enemy.ycor()
-            y -= 40
+            for e in enemies:
+              y = e.ycor()
+              y -= 40
+              e.sety(y)
             enemyspeed *= -1
-            enemy.sety(y)
 #Check for collision between enemy and bullet
         if isCollision(bullet, enemy):
             bullet.hideturtle()
@@ -134,12 +153,19 @@ while True:
             x = random.randint(-200, 200)
             y = random.randint(100, 250)
             enemy.setposition(x, y)
+#Update Score
+            score += 10
+            scorestring = "Score: %s" %score
+            score_pen.clear()
+            score_pen.write(scorestring, False, align="left", font= ("Arial", 14, "normal"))
     
         if isCollision(bullet, enemy):
             player.hideturtle()
             enemy.hideturtle()
             print("Game Over")
             break  
+
+
 
 #move the bullet
     if bulletstate == "fire":
