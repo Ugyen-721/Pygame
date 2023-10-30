@@ -1,13 +1,13 @@
 import turtle 
-import os
 import math
 import random
 
 #set up the screen 
-bg = turtle.Screen()
-bg.bgcolor("Black")
-bg.title("Space Destroyer")
-bg.bgpic("Spacebg.gif")
+wn = turtle.Screen()
+wn.bgcolor("Black")
+wn.title("Space Destroyer")
+wn.bgpic("Background.gif")
+
 
 #register the shapes
 turtle.register_shape("destroyer.gif")
@@ -33,7 +33,7 @@ score_pen.speed(0)
 score_pen.color("white")
 score_pen.penup()
 score_pen.setposition(-280, 270)
-scorestring = "Score: %s" %score
+scorestring = "Score: {}".format(score)
 score_pen.write(scorestring, False, align="left", font= ("Arial", 14, "normal"))
 score_pen.hideturtle()
 
@@ -45,23 +45,24 @@ player.penup()
 player.speed(0)
 player.setposition(0, -250)
 player.setheading(90)
+player.speed = 0
 
-playerspeed = 15
-
-#create enemy
-enemy = turtle.Turtle()
-enemy.color("Red")
-enemy.shape("destroyer.gif")
-enemy.penup()
-enemy.speed(0)
-enemy.setposition(-200, 250)
-enemyspeed = 2
-
-number_of_enemies = 5
+number_of_enemies = 6
 enemies = []
-#add enemies to list
+
 for i in range(number_of_enemies):
     enemies.append(turtle.Turtle())
+
+#create enemy
+for enemy in enemies:
+    enemy.color("Red")
+    enemy.shape("destroyer.gif")
+    enemy.penup()
+    enemy.speed(0)
+    enemy.setposition(-200, 250)
+    enemyspeed = 2
+
+
 for enemy in enemies:
     enemy.color("Red")
     enemy.shape("destroyer.gif")
@@ -87,18 +88,20 @@ bulletstate = "ready"
 
 #moving left and right
 def move_left():
+    player.speed = -15
+ 
+def move_right():
+    player.speed = 15
+    
+def move_player():
     x = player.xcor()
-    x-= playerspeed
+    x += player.speed
     if x < -280:
         x = -280
-    player.setx(x)
-
-def move_right():
-    x = player.xcor()
-    x+= playerspeed
     if x > 280:
         x = 280
     player.setx(x)
+    
 
 def fire_bullet():
     #declare bullet as global state
@@ -125,6 +128,9 @@ turtle.onkey(fire_bullet, "space")
 
 #Main game loop
 while True:
+    wn.update()
+    move_player()
+
     for enemy in enemies:
         x = enemy.xcor()
         x+= enemyspeed
@@ -135,8 +141,9 @@ while True:
             for e in enemies:
                y = e.ycor()
                y -= 40
-               e.sety(y)
+               e.sety(y) 
             enemyspeed *= -1
+            
     
         if enemy.xcor() < -280:
             for e in enemies:
@@ -155,7 +162,7 @@ while True:
             enemy.setposition(x, y)
 #Update Score
             score += 10
-            scorestring = "Score: %s" %score
+            scorestring = "Score: {}".format(score)
             score_pen.clear()
             score_pen.write(scorestring, False, align="left", font= ("Arial", 14, "normal"))
     
@@ -164,8 +171,6 @@ while True:
             enemy.hideturtle()
             print("Game Over")
             break  
-
-
 
 #move the bullet
     if bulletstate == "fire":
